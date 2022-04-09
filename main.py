@@ -1,5 +1,5 @@
 from dots_drawer import DotsDrawer
-from perceptron import Perceptron
+from perceptron import *
 from random import uniform
 
 test_data = [
@@ -36,11 +36,20 @@ if __name__ == '__main__':
             drawer.dot(x=dot[0], y=dot[1], color=colours[color])
 
         perc = Perceptron()
-        for _ in range(10):
+        for i in range(3000):
+            max_error = 0
             for dot, color in test_data:
                 res = perc.eval(list(dot))
-                err = 0.5 * (color - res) ** 2
+                err = (color - res) ** 2
+                #print(f"{dot} -> {res:.4f} | {color} -> {err}")
+                max_error = max(max_error, err)
                 perc.teach(err=err, data=list(dot))
+            print(f"{i: >4}: {max_error}")
+            perc.learningRate = max_error * 0.001
+            perc.print()
+            # if max_error < 0.1:
+            #     print(f"studied at {i}")
+            #     break
 
         for _ in range(100):
             rand_dot = get_random_dot()
@@ -48,3 +57,9 @@ if __name__ == '__main__':
                 drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[1])
             else:
                 drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[0])
+
+        for i in range(200):
+            # Окей, тут норм кривая
+            height = parabolize(sygmify((i-100) * 0.01)) * 50 + 200
+            # print(f"d(s({i})) = {height}")
+            drawer.dot(x=i, y=height, color=(128, 128, 32), size=2)

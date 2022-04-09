@@ -18,11 +18,12 @@ class DotsDrawer:
             self.image.save(out, 'PNG')
         self.image.close()
 
-    def dot(self, x: int, y: int, color):
+    def dot(self, x: int, y: int, color, size=None):
+        size = size or self.size
         y = self.canvas_size[1] - y
         self.draw.arc(
-            ((x - self.size, y - self.size), (x + self.size, y + self.size)),
+            ((x - size, y - size), (x + size, y + size)),
             0, 360,
             fill=color,
-            width=self.size * 2
+            width=size * 2
         )
