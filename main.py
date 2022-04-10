@@ -37,19 +37,19 @@ def normalize_dot(dot):
     return dot[0] / 500.0, dot[1] / 500.0
 
 
-def main_test(drawer):
+def main_2d(drawer):
     for dot, color in test_data:
         drawer.dot(x=dot[0], y=dot[1], color=colours[color])
 
     perc = Perceptron(2)
-    for i in range(100_000):
+    for i in range(1_000_000):
         max_error = 0
         for dot, answer in test_data:
             res = perc.eval(list(normalize_dot(dot)))
             err = answer - res
             max_error = max(max_error, err)
-            perc.teach(err=err, f_input=list(normalize_dot(dot)))
-        perc.learningRate = max_error * 0.001
+            perc.learn(err=err, data=list(normalize_dot(dot)))
+        perc.learning_rate = max_error * 0.001
 
     for _ in range(100):
         rand_dot = get_random_dot()
@@ -59,11 +59,11 @@ def main_test(drawer):
             drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[0], size=2)
 
 
-def main_simplest(drawer):
+def main_1d(drawer):
     training_data = []
     for _ in range(20):
         value = uniform(0, 1)
-        answer = 0 if value < 0.7 else 1
+        answer = 0 if value < 0.5 else 1
         entry = ([value], answer)
         training_data.append(entry)
 
@@ -73,9 +73,9 @@ def main_simplest(drawer):
         for dot, answer in training_data:
             result = perc.eval(list(dot))
             error = answer - result
-            perc.teach(f_input=list(dot), err=error)
+            perc.learn(data=list(dot), err=error)
             max_error = max(max_error, error)
-        perc.learningRate = max_error * 0.001
+        perc.learning_rate = max_error * 0.1
 
     for dot, answer in training_data:
         drawer.dot(x=50 + dot[0] * 400, y=350, color=colours[answer])
@@ -88,5 +88,7 @@ def main_simplest(drawer):
 
 if __name__ == '__main__':
     with DotsDrawer('dots.png') as drawer:
-        main_test(drawer)
-        # main_simplest(drawer)
+        options = {'1': main_1d,
+                   '2': main_2d}
+        run_option = input('For 1d perceptron enter 1, for 2d perceptron enter 2:')
+        options[run_option](drawer)

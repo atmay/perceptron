@@ -1,15 +1,5 @@
-from functools import reduce
 from random import uniform
 import math
-
-
-
-def legacy_sigmoid(x: float):
-    return x / (abs(x) + 0.1)
-
-
-def legacy_sigmoid_derivative(x: float):
-    return 4 * (x + 0.5) * (0.5 - x)
 
 
 def sigmoid(x: float):
@@ -24,7 +14,7 @@ class Perceptron:
     def __init__(self, size):
         self.weights = [uniform(0.01, 0.2) for _ in range(size)]
         self.last_result = 0
-        self.learningRate = 0.1
+        self.learning_rate = 0.1
         self.bias = 0
 
     def eval(self, f_input: list[float]):
@@ -35,11 +25,13 @@ class Perceptron:
         self.last_result = sigmoid(self.last_result)
         return self.last_result
 
-    def teach(self, f_input: list[float], err: float):
-        change = err * sigmoid_derivative(self.last_result) * self.learningRate
+    def learn(self, data: list[float], err: float):
+        change = err * sigmoid_derivative(self.last_result) * self.learning_rate
         for i in range(len(self.weights)):
-            self.weights[i] += f_input[i] * change
+            self.weights[i] += data[i] * change
         self.bias += change
+        res = [w * err for w in self.weights]
+        return res
 
     def print(self):
         print(f"Perceptron: [ {self.bias} ] . {self.weights}")
