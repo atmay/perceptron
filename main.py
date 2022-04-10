@@ -23,43 +23,86 @@ test_data = [
     ((490, 450), 1),
 ]
 
+colours = {
+    0: (0, 240, 0),
+    1: (0, 0, 240)
+}
+
 
 def get_random_dot():
     return int(uniform(0, 500)), int(uniform(0, 500))
 
 
+def normalize_dot(dot):
+    return dot[0] / 500.0, dot[1] / 500.0
+
+
+def main_test(drawer):
+    for dot, color in test_data:
+        drawer.dot(x=dot[0], y=dot[1], color=colours[color])
+
+    perc = Perceptron(2)
+    for i in range(100_000):
+        max_error = 0
+        for dot, answer in test_data:
+            res = perc.eval(list(normalize_dot(dot)))
+            err = answer - res
+            max_error = max(max_error, err)
+            perc.teach(err=err, f_input=list(normalize_dot(dot)))
+        # print(f"{i: >4}: {max_error}")
+        perc.learningRate = max_error * 0.001
+        # perc.print()
+        # if max_error < 0.1:
+        #     print(f"studied at {i}")
+        #     break
+
+    for _ in range(100):
+        rand_dot = get_random_dot()
+        if perc.eval(list(normalize_dot(rand_dot))) > 0.5:
+            drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[1], size=2)
+        else:
+            drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[0], size=2)
+
+    #for i in range(200):
+    #    # Окей, тут норм кривая
+    #    height = sigmoid_derivative(sigmoid((i - 100) * 0.01)) * 50 + 200
+    #    # print(f"d(s({i})) = {height}")
+    #    drawer.dot(x=i, y=height, color=(128, 128, 32), size=2)
+
+
+def main_simplest(drawer):
+    training_data = []
+    for _ in range(20):
+        value = uniform(0, 1)
+        answer = 0 if value < 0.7 else 1
+        entry = ([value], answer)
+        training_data.append(entry)
+
+    perc = Perceptron(1)
+    for i in range(10_000):
+        max_error = 0
+        for dot, answer in training_data:
+            result = perc.eval(list(dot))
+            error = answer - result
+            perc.teach(f_input=list(dot), err=error)
+            max_error = max(max_error, error)
+        # print(f"{i: >4}: {max_error}")
+        perc.learningRate = max_error * 0.001
+        perc.print()
+        # if max_error < 0.1:
+        #     print(f"studied at {i}")
+        #     break
+
+    for dot, answer in training_data:
+        drawer.dot(x=50 + dot[0] * 400, y=350, color=colours[answer])
+
+    for _ in range(100):
+        dot = [uniform(0, 1)]
+        answer = 0 if perc.eval(dot) < 0.5 else 1
+        drawer.dot(x=50 + dot[0] * 400, y=400, color=colours[answer])
+
+
 if __name__ == '__main__':
-    colours = {0: (0, 240, 0),
-               1: (0, 0, 240)}
     with DotsDrawer('dots.png') as drawer:
-        for dot, color in test_data:
-            drawer.dot(x=dot[0], y=dot[1], color=colours[color])
-
-        perc = Perceptron()
-        for i in range(3000):
-            max_error = 0
-            for dot, color in test_data:
-                res = perc.eval(list(dot))
-                err = (color - res) ** 2
-                #print(f"{dot} -> {res:.4f} | {color} -> {err}")
-                max_error = max(max_error, err)
-                perc.teach(err=err, data=list(dot))
-            print(f"{i: >4}: {max_error}")
-            perc.learningRate = max_error * 0.001
-            perc.print()
-            # if max_error < 0.1:
-            #     print(f"studied at {i}")
-            #     break
-
-        for _ in range(100):
-            rand_dot = get_random_dot()
-            if perc.eval(list(rand_dot)) > 0.5:
-                drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[1])
-            else:
-                drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[0])
-
-        for i in range(200):
-            # Окей, тут норм кривая
-            height = parabolize(sygmify((i-100) * 0.01)) * 50 + 200
-            # print(f"d(s({i})) = {height}")
-            drawer.dot(x=i, y=height, color=(128, 128, 32), size=2)
+        main_test(drawer)
+        # main_simplest(drawer)
