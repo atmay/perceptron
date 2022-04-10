@@ -36,10 +36,8 @@ class Perceptron:
         return self.last_result
 
     def teach(self, f_input: list[float], err: float):
-        # print(f"teach( {f_input} , {err} )")
         change = err * sigmoid_derivative(self.last_result) * self.learningRate
         for i in range(len(self.weights)):
-            #print(f"weight[{i}]: S({self.last_result:.2f}) * {err:.2f} * {self.learningRate:.2f} -> {change}")
             self.weights[i] += f_input[i] * change
         self.bias += change
 

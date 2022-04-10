@@ -49,12 +49,7 @@ def main_test(drawer):
             err = answer - res
             max_error = max(max_error, err)
             perc.teach(err=err, f_input=list(normalize_dot(dot)))
-        # print(f"{i: >4}: {max_error}")
         perc.learningRate = max_error * 0.001
-        # perc.print()
-        # if max_error < 0.1:
-        #     print(f"studied at {i}")
-        #     break
 
     for _ in range(100):
         rand_dot = get_random_dot()
@@ -62,12 +57,6 @@ def main_test(drawer):
             drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[1], size=2)
         else:
             drawer.dot(x=rand_dot[0], y=rand_dot[1], color=colours[0], size=2)
-
-    #for i in range(200):
-    #    # Окей, тут норм кривая
-    #    height = sigmoid_derivative(sigmoid((i - 100) * 0.01)) * 50 + 200
-    #    # print(f"d(s({i})) = {height}")
-    #    drawer.dot(x=i, y=height, color=(128, 128, 32), size=2)
 
 
 def main_simplest(drawer):
@@ -86,12 +75,7 @@ def main_simplest(drawer):
             error = answer - result
             perc.teach(f_input=list(dot), err=error)
             max_error = max(max_error, error)
-        # print(f"{i: >4}: {max_error}")
         perc.learningRate = max_error * 0.001
-        perc.print()
-        # if max_error < 0.1:
-        #     print(f"studied at {i}")
-        #     break
 
     for dot, answer in training_data:
         drawer.dot(x=50 + dot[0] * 400, y=350, color=colours[answer])
